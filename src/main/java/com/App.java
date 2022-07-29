@@ -2,7 +2,7 @@ package com;
 
 import java.util.ArrayList;
 import javafx.animation.AnimationTimer;
-import javafx.application.Application;
+import javafx.application.Application; 
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -21,9 +21,7 @@ public class App extends Application {
     private Bloco jogador;
     
 
-    private Parent criarConteudo() {
-        System.out.println("criar conteudo...");
-        
+    private Parent criarCena() {
         tela.setPrefSize(600, 600);
         
         AnimationTimer timer = new AnimationTimer() {
@@ -41,18 +39,14 @@ public class App extends Application {
             Bloco p = new Bloco(90 + i * 100, 150, 30, 30, "inimigo", Color.RED);
             tela.getChildren().add(p);
         }
-
         return tela;
     }
 
-    private void criaPersonagens() {
-        
-    }
+    
 
     // Versão convencional
     // Coleta os personagens para atualizar a tela
     private List<Bloco> personagens() {
-        System.out.println("personagens...");
         List<Bloco> lista = new ArrayList();
         for (Object o : tela.getChildren()) {
             lista.add((Bloco) o);
@@ -65,28 +59,28 @@ public class App extends Application {
 //        return tela.getChildren().stream().map(n -> (Bloco) n).collect(Collectors.toList());
 //    }
     private void atualizarTela() {
-        System.out.println("atualizou tela...");
         t += 0.016;
 
-        personagens().forEach(s -> {
-            switch (s.getTipo()) {
+        personagens().forEach(personagem -> {
+            switch (personagem.getTipo()) {
 
                 case "tiroinimigo":
-                    s.moverParaBaixo();
+                    personagem.moverParaBaixo();
 
-                    if (s.getBoundsInParent().intersects(jogador.getBoundsInParent())) {
+                    if (personagem.getBoundsInParent().intersects(jogador.getBoundsInParent())) {
                         jogador.setMorto(true);
-                        s.setMorto(true);
+                        personagem.setMorto(true);
+                        tela.getChildren().remove(jogador);
                     }
                     break;
 
                 case "tirojogador":
-                    s.moverParaCima();
+                    personagem.moverParaCima();
 
                     personagens().stream().filter(e -> e.getTipo().equals("inimigo")).forEach(inimigo -> {
-                        if (s.getBoundsInParent().intersects(inimigo.getBoundsInParent())) {
+                        if (personagem.getBoundsInParent().intersects(inimigo.getBoundsInParent())) {
                             inimigo.setMorto(true);
-                            s.setMorto(true);
+                            personagem.setMorto(true);
                         }
                     });
 
@@ -95,7 +89,7 @@ public class App extends Application {
                 case "inimigo":
                     if (t > 2) {
                         if (Math.random() < 0.3) {
-                            atirar(s);
+                            atirar(personagem);
                         }
                     }
                     break;
@@ -113,16 +107,16 @@ public class App extends Application {
 
     }
 
-    private void atirar(Bloco quem) {
-        Bloco bloco = new Bloco((int) quem.getTranslateX() + 20,
-                (int) quem.getTranslateY(), 5, 20, "tiro" + quem.getTipo(), Color.BLACK);
+    private void atirar(Bloco quemAtirou) {
+        Bloco bloco = new Bloco((int) quemAtirou.getTranslateX() + 20,
+                (int) quemAtirou.getTranslateY(), 5, 20, "tiro" + quemAtirou.getTipo(), Color.BLACK);
 
         tela.getChildren().add(bloco);
     }
 
     @Override
     public void start(Stage palco) throws Exception {
-        Scene cena = new Scene(criarConteudo());
+        Scene cena = new Scene(criarCena());
 
         cena.setOnKeyPressed(e -> {
             switch (e.getCode()) {
