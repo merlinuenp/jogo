@@ -6,6 +6,8 @@ import javafx.scene.shape.Rectangle;
 public class Bloco extends Rectangle {
     private boolean morto; 
     private String tipo;    // se jogador ou inimigo 
+    
+    public Bloco(){}
 
     public Bloco(int posX, int posY, 
             int largura, int altura, 

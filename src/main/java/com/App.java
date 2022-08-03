@@ -1,8 +1,10 @@
 package com;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import javafx.animation.AnimationTimer;
-import javafx.application.Application; 
+import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -10,27 +12,33 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import java.util.List;
 import static javafx.application.Application.launch;
+import javafx.scene.effect.ImageInput;
+import javafx.scene.image.Image;
+import javafx.scene.robot.Robot;
 
 /**
  * Primeira tela.
  */
 public class App extends Application {
 
-    private Pane tela = new Pane();
+    private final Pane tela = new Pane();
     private double t = 0;   // controla o tempo entre os tiros do inimigo
     private Bloco jogador;
-    
+    private Bloco figura;
+    Robot robot = new Robot();
 
-    private Parent criarCena() {
+    private Parent criarCena() throws FileNotFoundException {
         tela.setPrefSize(600, 600);
         
-        AnimationTimer timer = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                atualizarTela();
-            }
-        };
-        timer.start();
+        FileInputStream inputstream = new FileInputStream("C:\\Users\\User\\Downloads\\cafe.jpg");
+        Image image = new Image(inputstream);
+        ImageInput imagem = new ImageInput();
+        imagem.setX(0.0);
+        imagem.setY(0.0);
+        imagem.setSource(image);
+        figura = new Bloco(0, 0, 40, 40, "figura", Color.WHITE);
+        figura.setEffect(imagem);
+        tela.getChildren().add(figura);
 
         // cria personagens 
         jogador = new Bloco(300, 550, 40, 40, "jogador", Color.BLUE);
@@ -39,10 +47,16 @@ public class App extends Application {
             Bloco p = new Bloco(90 + i * 100, 150, 30, 30, "inimigo", Color.RED);
             tela.getChildren().add(p);
         }
+
+        AnimationTimer timer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                atualizarTela();
+            }
+        };
+        timer.start();
         return tela;
     }
-
-    
 
     // Versão convencional
     // Coleta os personagens para atualizar a tela
@@ -93,13 +107,18 @@ public class App extends Application {
                         }
                     }
                     break;
+
+                case "figura":
+                    figura.setTranslateX(robot.getMouseX());
+                    figura.setTranslateY(robot.getMouseY());
+                    break;
             }
         });
-
-        tela.getChildren().removeIf(n -> {
-            Bloco s = (Bloco) n;
-            return s.isMorto();
-        });
+             
+//        tela.getChildren().removeIf(n -> {
+//            Bloco s = (Bloco) n;
+//            s.isMorto();
+//        });
 
         if (t > 2) {
             t = 0;
@@ -108,10 +127,14 @@ public class App extends Application {
     }
 
     private void atirar(Bloco quemAtirou) {
+        if (quemAtirou.isMorto()){
+            return; 
+        }
+        
         Bloco bloco = new Bloco((int) quemAtirou.getTranslateX() + 20,
                 (int) quemAtirou.getTranslateY(), 5, 20, "tiro" + quemAtirou.getTipo(), Color.BLACK);
 
-        tela.getChildren().add(bloco);
+        tela.getChildren().add(bloco);  //adiciona um tiro 
     }
 
     @Override
