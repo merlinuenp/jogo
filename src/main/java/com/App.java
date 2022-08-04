@@ -1,7 +1,11 @@
 package com;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -11,9 +15,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import java.util.List;
-import static javafx.application.Application.launch;
+import javafx.scene.Node;
+//import static javafx.application.Application.launch;
 import javafx.scene.effect.ImageInput;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.robot.Robot;
 
 /**
@@ -27,16 +33,17 @@ public class App extends Application {
     private Bloco figura;
     Robot robot = new Robot();
 
-    private Parent criarCena() throws FileNotFoundException {
+    private Parent criarCena() throws FileNotFoundException, URISyntaxException {
         tela.setPrefSize(600, 600);
-        
-        FileInputStream inputstream = new FileInputStream("C:\\Users\\User\\Downloads\\cafe.jpg");
-        Image image = new Image(inputstream);
+
+        URL resource = getClass().getClassLoader().getResource("go.png");        
+        FileInputStream inputstream = new FileInputStream(new File(resource.toURI()));
+        Image im = new Image(inputstream);
         ImageInput imagem = new ImageInput();
         imagem.setX(0.0);
         imagem.setY(0.0);
-        imagem.setSource(image);
-        figura = new Bloco(0, 0, 40, 40, "figura", Color.WHITE);
+        imagem.setSource(im);
+        figura = new Bloco(0, 0, 62, 62, "figura", Color.WHITE);
         figura.setEffect(imagem);
         tela.getChildren().add(figura);
 
@@ -114,12 +121,11 @@ public class App extends Application {
                     break;
             }
         });
-             
+
 //        tela.getChildren().removeIf(n -> {
 //            Bloco s = (Bloco) n;
 //            s.isMorto();
 //        });
-
         if (t > 2) {
             t = 0;
         }
@@ -127,10 +133,10 @@ public class App extends Application {
     }
 
     private void atirar(Bloco quemAtirou) {
-        if (quemAtirou.isMorto()){
-            return; 
+        if (quemAtirou.isMorto()) {
+            return;
         }
-        
+
         Bloco bloco = new Bloco((int) quemAtirou.getTranslateX() + 20,
                 (int) quemAtirou.getTranslateY(), 5, 20, "tiro" + quemAtirou.getTipo(), Color.BLACK);
 
@@ -139,6 +145,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage palco) throws Exception {
+
         Scene cena = new Scene(criarCena());
 
         cena.setOnKeyPressed(e -> {
