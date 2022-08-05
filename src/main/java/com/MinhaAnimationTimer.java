@@ -6,10 +6,17 @@
 
 package com;
 
+import javafx.animation.AnimationTimer;
+
 /**
  *
  * @author joser
  */
-public class MinhaAnimationTimer {
+public class MinhaAnimationTimer extends AnimationTimer {
+
+    @Override
+    public void handle(long l) {
+        //atualizarTela(); 
+    }
 
 }

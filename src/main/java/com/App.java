@@ -33,7 +33,7 @@ public class App extends Application {
     private Bloco figura;
     Robot robot = new Robot();
 
-    private Parent criarCena() throws FileNotFoundException, URISyntaxException {
+    private Parent criarCena() throws Exception {
         tela.setPrefSize(600, 600);
 
         URL resource = getClass().getClassLoader().getResource("go.png");        
